@@ -1,0 +1,107 @@
+[project]
+name = "crypto-converter"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Igor Kraglik",email = "kraglik.i.d@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13, <4.0"
+dependencies = [
+    "aiohttp (>=3.12.15,<4.0.0)",
+    "fastapi (>=0.118.0,<0.119.0)",
+    "sqlalchemy (>=2.0.43,<3.0.0)",
+    "pydantic (>=2.11.9,<3.0.0)",
+    "pydantic-settings (>=2.11.0,<3.0.0)",
+    "redis (>=6.4.0,<7.0.0)",
+    "uvicorn (>=0.37.0,<0.38.0)",
+    "asyncpg (>=0.30.0,<0.31.0)",
+    "python-json-logger (>=3.3.0,<4.0.0)",
+    "opentelemetry-instrumentation-fastapi (>=0.58b0,<0.59)",
+    "opentelemetry-instrumentation-sqlalchemy (>=0.58b0,<0.59)",
+    "opentelemetry-instrumentation-redis (>=0.58b0,<0.59)",
+    "opentelemetry-api (>=1.37.0,<2.0.0)",
+    "opentelemetry-sdk (>=1.37.0,<2.0.0)",
+    "structlog (>=25.4.0,<26.0.0)",
+    "apscheduler (>=3.11.0,<4.0.0)",
+    "dependency-injector (>=4.48.2,<5.0.0)",
+    "opentelemetry-exporter-otlp-proto-http (>=1.37.0,<2.0.0)",
+    "opentelemetry-instrumentation-aiohttp-client (>=0.58b0,<0.59)",
+    "prometheus-client (>=0.23.1,<0.24.0)",
+    "tenacity (>=9.1.2,<10.0.0)",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.9.0"
+isort = "^6.1.0"
+pytest = "^8.4.2"
+ruff = "^0.13.2"
+pytest-cov = "^7.0.0"
+pytest-async = "^0.1.1"
+pytest-mock = "^3.15.1"
+httpx = "^0.28.1"
+fakeredis = "^2.31.3"
+factory-boy = "^3.3.3"
+locust = "^2.41.3"
+mypy = "^1.18.2"
+pytest-asyncio = "^1.2.0"
+freezegun = "^1.5.5"
+testcontainers = "^4.13.1"
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+line_length = 88
+profile = "black"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+    "--cov=converter",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "e2e: End-to-end tests",
+    "slow: Slow running tests",
+    "asyncio: Async tests",
+]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.coverage.run]
+source = ["converter"]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/site-packages/*",
+    "*/migrations/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+

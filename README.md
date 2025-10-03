@@ -52,3 +52,10 @@ To run all tests:
 
 For development, Python 3.13 installation is required.
 This project uses Poetry (v.2.2.1 in `docker/app/Dockerfile`).
+
+## Notes
+
+This service has a fixed, static database schema with a single table, which is why I decided to define it with SQL scripts directly.
+For data maintenance, I chose `pg_partman` extension - when used together with `pg_cron`, it automatically maintains the quotes table.
+Its older partitions are dropped with no consequences for indexes of other partitions, which gives us predictable performance.
+The table is maintained for as long as the database service itself is running, which reduces the consumer part responsibilities significantly.

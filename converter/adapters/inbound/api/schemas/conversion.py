@@ -4,6 +4,7 @@ from typing import Optional
 
 from fastapi import Query
 from pydantic import BaseModel, Field, field_validator
+from pydantic_core.core_schema import ValidationInfo
 
 from converter.app.queries.get_conversion import ConversionResult, GetConversionQuery
 from converter.domain.services.factory import AmountFactory
@@ -63,7 +64,7 @@ class ConvertRequest(BaseModel):
 
     @field_validator("to_currency")
     @classmethod
-    def validate_different_currencies(cls, v: str, info) -> str:
+    def validate_different_currencies(cls, v: str, info: ValidationInfo) -> str:
         if "from_currency" in info.data and v == info.data["from_currency"]:
             raise ValueError("Source and target currencies must be different")
         return v

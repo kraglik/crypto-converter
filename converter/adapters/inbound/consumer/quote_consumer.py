@@ -2,6 +2,7 @@ import asyncio
 
 from tenacity import (
     AsyncRetrying,
+    RetryCallState,
     RetryError,
     retry_if_exception_type,
     stop_after_attempt,
@@ -23,7 +24,7 @@ class QuoteConsumer:
         self,
         rate_source: RateSource,
         handler: StoreQuotesCommandHandler,
-    ):
+    ) -> None:
         self._rate_source = rate_source
         self._handler = handler
         self._shutdown_event = asyncio.Event()
@@ -124,7 +125,7 @@ class QuoteConsumer:
             )
 
     @staticmethod
-    def _log_retry(retry_state) -> None:
+    def _log_retry(retry_state: RetryCallState) -> None:
         logger.warning(
             "quote_consumer_retrying",
             attempt=retry_state.attempt_number,

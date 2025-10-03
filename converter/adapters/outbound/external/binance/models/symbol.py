@@ -13,7 +13,7 @@ class BinanceSymbolInfo:
     base_asset: str
     quote_asset: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.symbol:
             raise ValueError("Symbol cannot be empty")
         if not self.symbol.isupper():

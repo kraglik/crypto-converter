@@ -2,7 +2,6 @@ from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 import pytest
-
 from converter.domain.exceptions.conversion import QuoteTooOldError
 from converter.domain.models import Quote
 from converter.domain.services.quote_freshness_service import (
@@ -53,9 +52,7 @@ def test_is_fresh_and_filter_fresh_quotes():
     stale_q = _quote_at(base - timedelta(seconds=60))
 
     ref = TimestampUTC(base + timedelta(seconds=30))
-    filtered = svc.filter_fresh_quotes(
-        [fresh_q, stale_q], reference_time=ref
-    )
+    filtered = svc.filter_fresh_quotes([fresh_q, stale_q], reference_time=ref)
 
     assert svc.is_fresh(fresh_q, TimestampUTC(base + timedelta(seconds=30))) is True
     assert svc.is_fresh(stale_q, ref) is False

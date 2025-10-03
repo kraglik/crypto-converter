@@ -1,5 +1,4 @@
 import pytest
-
 from converter.domain.values import Currency
 
 

@@ -1,3 +1,4 @@
+import redis.asyncio as redis
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,7 +25,7 @@ router = APIRouter(tags=["Health"])
 )
 async def health_check(
     db: AsyncSession = Depends(get_db_session),
-    redis_client=Depends(get_redis_client),
+    redis_client: redis.Redis = Depends(get_redis_client),
 ) -> ServiceHealthResponse:
     checks: dict[str, HealthCheckResponse] = {}
 

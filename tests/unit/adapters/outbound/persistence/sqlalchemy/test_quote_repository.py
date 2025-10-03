@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 import pytest
-
 from converter.adapters.outbound.persistence.sqlalchemy.models import QuoteModel
 from converter.adapters.outbound.persistence.sqlalchemy.quote_repository import (
     PostgresQuoteRepository,
@@ -39,6 +38,7 @@ class MockSession:
 def _session_factory_with(model):
     def _factory():
         return MockSession(model)
+
     return _factory
 
 

@@ -46,7 +46,9 @@ router = APIRouter(prefix="/convert", tags=["Conversion"])
         },
     },
     summary="Convert Currency Amount",
-    description="Provide crypto token conversion estimate based on latest binance rates",
+    description=(
+        "Provide crypto token conversion estimate based on latest binance rates"
+    ),
 )
 async def convert_currency(
     request: ConvertRequest = Depends(parse_convert_request),
@@ -107,7 +109,7 @@ async def convert_currency(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="; ".join(error_messages),
-        )
+        ) from e
 
     except ValueError as e:
         duration = time.time() - start_time
@@ -119,7 +121,10 @@ async def convert_currency(
             duration_ms=round(duration * 1000, 2),
         )
 
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
 
     except (QuoteNotFoundError, QuoteTooOldError) as e:
         duration = time.time() - start_time
@@ -138,7 +143,7 @@ async def convert_currency(
                 pair=pair_str, status=type(e).__name__
             ).inc()
 
-        raise handle_domain_error(e)
+        raise handle_domain_error(e) from e
 
     except Exception as e:
         duration = time.time() - start_time
@@ -155,4 +160,4 @@ async def convert_currency(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred during conversion",
-        )
+        ) from e

@@ -3,7 +3,6 @@ from decimal import Decimal
 from typing import Optional
 
 import pytest
-
 from converter.app.ports.outbound.quote_repository import QuoteRepository
 from converter.app.queries.get_conversion import ConversionResult as AppConversionResult
 from converter.app.queries.get_conversion import (
@@ -39,7 +38,12 @@ class MockConversionService(ConversionService):
     def __init__(self):
         pass
 
-    def convert(self, amount: Amount, quote: Quote, reference_time: Optional[TimestampUTC] = None) -> DomainConversionResult:
+    def convert(
+        self,
+        amount: Amount,
+        quote: Quote,
+        reference_time: Optional[TimestampUTC] = None,
+    ) -> DomainConversionResult:
         converted = Amount(amount.value * quote.rate.value)
         return DomainConversionResult(
             original_amount=amount,
@@ -88,7 +92,9 @@ async def test_handle_historical_happy_path():
     handler = GetConversionQueryHandler(quote_repository=repo, conversion_service=svc)
 
     ref = TimestampUTC(datetime(2025, 10, 2, 12, 1, 0, tzinfo=timezone.utc))
-    query = GetConversionQuery(amount=Amount(Decimal("1.5")), pair=q.pair, at_timestamp=ref)
+    query = GetConversionQuery(
+        amount=Amount(Decimal("1.5")), pair=q.pair, at_timestamp=ref
+    )
 
     result = await handler.handle(query)
 

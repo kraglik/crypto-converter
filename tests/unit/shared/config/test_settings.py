@@ -1,5 +1,4 @@
 import pytest
-
 from converter.shared.config import get_settings
 
 

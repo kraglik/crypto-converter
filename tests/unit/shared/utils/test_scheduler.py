@@ -1,7 +1,6 @@
 import asyncio
 
 import pytest
-
 from converter.shared.utils.scheduler import FixedRateScheduler
 
 

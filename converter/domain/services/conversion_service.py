@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from converter.domain.models import Quote
 from converter.domain.values import Amount, Pair, Rate, TimestampUTC
@@ -30,14 +31,18 @@ class ConversionService:
         self._freshness_service = freshness_service
 
     def convert(
-        self, amount: Amount, quote: Quote, reference_time: TimestampUTC = None
+        self,
+        amount: Amount,
+        quote: Quote,
+        reference_time: Optional[TimestampUTC] = None,
     ) -> ConversionResult:
         """
         Convert an amount using provided quote.
         For historical conversions, appropriate reference time must be provided.
 
         :param amount: Amount that needs to be converted.
-        :param quote: Quote object, either a fresh one or the most recent for the reference time provided.
+        :param quote: Quote object, either a fresh one or the most recent
+                      for the reference time provided.
         :param reference_time: Reference time for freshness check
 
         :return: ConversionResult with converted amount and metadata

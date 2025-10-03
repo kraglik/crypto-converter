@@ -1,10 +1,9 @@
-from fastapi import HTTPException
-from starlette import status
-
 from converter.adapters.inbound.api.error_handler import handle_domain_error
 from converter.domain.exceptions.conversion import QuoteNotFoundError, QuoteTooOldError
 from converter.domain.values import Currency, Pair
 from converter.domain.values.quote_age import QuoteAge
+from fastapi import HTTPException
+from starlette import status
 
 
 def test_error_handler_mappings():
@@ -23,4 +22,3 @@ def test_error_handler_mappings():
     assert unexpected.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
     assert too_old.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert bad.status_code == status.HTTP_400_BAD_REQUEST
-

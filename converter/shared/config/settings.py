@@ -14,7 +14,7 @@ class Settings(BaseSettings):
         default="INFO", description="Logging level [DEBUG, INFO, WARNING, ERROR]"
     )
 
-    DATABASE_URL: PostgresDsn = Field(
+    DATABASE_URL: PostgresDsn = Field(  # type: ignore [assignment]
         default="postgresql+asyncpg://converter_consumer:consumer_dev_pass@postgres/crypto_converter",
         description="PostgreSQL connection string for the db",
         examples=["postgresql+asyncpg://user:pass@host:port/db"],
@@ -138,6 +138,7 @@ class Settings(BaseSettings):
             raise ValueError(
                 "DATABASE_URL must use asyncpg driver (postgresql+asyncpg://...)"
             )
+
         return value
 
     @model_validator(mode="after")

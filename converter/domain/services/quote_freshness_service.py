@@ -10,13 +10,13 @@ from converter.domain.values import TimestampUTC
 class FreshnessPolicy:
     max_age_seconds: int = 60
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.max_age_seconds <= 0:
             raise ValueError(f"Max age must be positive: {self.max_age_seconds}")
 
 
 class QuoteFreshnessService:
-    def __init__(self, policy: FreshnessPolicy = None):
+    def __init__(self, policy: Optional[FreshnessPolicy] = None) -> None:
         self._policy = policy or FreshnessPolicy()
 
     def validate_freshness(
@@ -40,7 +40,11 @@ class QuoteFreshnessService:
                 reference_time=reference_time,
             )
 
-    def is_fresh(self, quote: Quote, reference_time: TimestampUTC = None) -> bool:
+    def is_fresh(
+        self,
+        quote: Quote,
+        reference_time: Optional[TimestampUTC] = None,
+    ) -> bool:
         """
         Check if quote is fresh enough, but without raising exception.
 
@@ -56,7 +60,7 @@ class QuoteFreshnessService:
             return False
 
     def filter_fresh_quotes(
-        self, quotes: list[Quote], reference_time: TimestampUTC = None
+        self, quotes: list[Quote], reference_time: Optional[TimestampUTC] = None
     ) -> list[Quote]:
         """
         Filter a list of quotes to only fresh ones.

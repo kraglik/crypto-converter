@@ -4,7 +4,6 @@ from typing import Optional
 
 import freezegun
 import pytest
-
 from converter.domain.exceptions.conversion import QuoteTooOldError
 from converter.domain.models import Quote
 from converter.domain.services.conversion_service import ConversionService

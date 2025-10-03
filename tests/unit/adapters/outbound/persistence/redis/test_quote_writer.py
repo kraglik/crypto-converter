@@ -30,7 +30,9 @@ def _q():
 async def test_redis_writer_saves_with_ttl():
     # Given
     redis = FakeRedis()
-    writer = RedisQuoteWriter(redis_client=redis, rate_factory=RateFactory(PrecisionService()), ttl_seconds=90)
+    writer = RedisQuoteWriter(
+        redis_client=redis, rate_factory=RateFactory(PrecisionService()), ttl_seconds=90
+    )
     quotes = [_q(), _q()]
     key = f"quote:latest:{quotes[0].pair}"
 
@@ -54,7 +56,9 @@ async def test_redis_writer_saves_with_ttl():
 async def test_redis_writer_empty_batch_noop():
     # Given
     redis = FakeRedis()
-    writer = RedisQuoteWriter(redis_client=redis, rate_factory=RateFactory(PrecisionService()), ttl_seconds=60)
+    writer = RedisQuoteWriter(
+        redis_client=redis, rate_factory=RateFactory(PrecisionService()), ttl_seconds=60
+    )
 
     # When & Then
     await writer.save_batch([])

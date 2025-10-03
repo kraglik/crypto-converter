@@ -1,5 +1,4 @@
 import pytest
-
 from converter.adapters.outbound.external.binance.client import (
     BinanceAPIClient,
     BinanceEndpoint,
@@ -29,7 +28,9 @@ async def test_binance_client_parses_exchange_info(monkeypatch):
 
     async def fake_make_request(self, endpoint, params, description):
         assert endpoint == BinanceEndpoint.EXCHANGE_INFO
-        return {"symbols": [{"symbol": "BTCUSDT", "baseAsset": "BTC", "quoteAsset": "USDT"}]}
+        return {
+            "symbols": [{"symbol": "BTCUSDT", "baseAsset": "BTC", "quoteAsset": "USDT"}]
+        }
 
     monkeypatch.setattr(BinanceAPIClient, "_make_request", fake_make_request)
     try:

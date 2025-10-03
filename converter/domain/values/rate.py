@@ -8,7 +8,7 @@ from .amount import Amount
 class Rate:
     value: Decimal
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.value <= 0:
             raise ValueError(f"Rate must be positive: {self.value}")
 

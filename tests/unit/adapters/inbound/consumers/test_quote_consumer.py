@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 import pytest
-
 from converter.adapters.inbound.consumer.quote_consumer import QuoteConsumer
 from converter.adapters.outbound.rate_source import RateBatch
 from converter.app.commands.store_quotes import StoreQuotesCommandHandler
@@ -36,8 +35,10 @@ class MockHandler(StoreQuotesCommandHandler):
 
     async def handle(self, command):
         self.calls.append(len(command.quotes))
+
         class R:
             total_received = len(command.quotes)
+
         return R()
 
 

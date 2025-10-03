@@ -2,16 +2,15 @@ import importlib
 from datetime import datetime, timezone
 from decimal import Decimal
 
-import pytest
-from fastapi.testclient import TestClient
-
 import converter.adapters.inbound.api.app as app_module
+import pytest
 from converter.adapters.outbound.persistence.redis.quote_writer import RedisQuoteWriter
 from converter.domain.models import Quote
 from converter.domain.services.factory import RateFactory
 from converter.domain.services.precision_service import PrecisionService
 from converter.domain.values import Currency, Pair, Rate, TimestampUTC
 from converter.shared.config import get_settings
+from fastapi.testclient import TestClient
 
 
 def _quote(ts: datetime) -> Quote:
@@ -37,7 +36,9 @@ async def test_api_convert_with_real_infra(env_infra, redis_client):
     app = importlib.reload(app_module).app
 
     with TestClient(app) as client:
-        resp = client.get("/convert", params={"amount": "2", "from": "BTC", "to": "USDT"})
+        resp = client.get(
+            "/convert", params={"amount": "2", "from": "BTC", "to": "USDT"}
+        )
         assert resp.status_code == 200
         data = resp.json()
         assert data["amount"] == "50000.0000000000000000"

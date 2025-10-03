@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 from .symbol import BinanceSymbolInfo
 
@@ -14,7 +15,7 @@ class BinanceExchangeInfo:
     symbols: list[BinanceSymbolInfo]
 
     @classmethod
-    def from_json(cls, data: dict) -> "BinanceExchangeInfo":
+    def from_json(cls, data: dict[str, Any]) -> "BinanceExchangeInfo":
         try:
             symbols_data = data["symbols"]
 

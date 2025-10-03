@@ -11,10 +11,7 @@ from converter.shared.logging import configure_logging, get_logger
 
 settings = get_settings()
 
-configure_logging(
-    log_level=settings.LOG_LEVEL,
-    json_logs=settings.JSON_LOGS
-)
+configure_logging(log_level=settings.LOG_LEVEL, json_logs=settings.JSON_LOGS)
 
 logger = get_logger(__name__)
 
@@ -24,7 +21,11 @@ def setup_arg_parser() -> ArgumentParser:
         description="Crypto Converter App Entrypoint",
         formatter_class=RawTextHelpFormatter,
     )
-    subparsers = parser.add_subparsers(dest="command", required=True, help="Available commands")
+    subparsers = parser.add_subparsers(
+        dest="command",
+        required=True,
+        help="Available commands",
+    )
 
     api_parser = subparsers.add_parser("api", help="Run the FastAPI web server.")
     api_parser.set_defaults(func=run_api)
@@ -32,7 +33,7 @@ def setup_arg_parser() -> ArgumentParser:
     consumer_parser = subparsers.add_parser(
         "consumer",
         aliases=["quote-consumer"],
-        help="Run the background quote consumer."
+        help="Run the background quote consumer.",
     )
     consumer_parser.set_defaults(func=run_consumer)
 
@@ -47,7 +48,7 @@ def run_api(args) -> None:
         "api_starting",
         host=settings.API_HOST,
         port=settings.API_PORT,
-        log_level=settings.LOG_LEVEL
+        log_level=settings.LOG_LEVEL,
     )
 
     uvicorn.run(
@@ -73,10 +74,7 @@ async def run_consumer_async(args) -> None:
 
     loop = asyncio.get_running_loop()
     for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(
-            sig,
-            partial(initiate_shutdown, sig)
-        )
+        loop.add_signal_handler(sig, partial(initiate_shutdown, sig))
         logger.debug("signal_handler_registered", signal=sig.name)
 
     consumer_task = asyncio.create_task(consumer.start(), name="quote_consumer_loop")
@@ -124,10 +122,7 @@ def main() -> None:
         args.func(args)
     except Exception as e:
         logger.error(
-            "command_failed",
-            command=args.command,
-            error=str(e),
-            exc_info=True
+            "command_failed", command=args.command, error=str(e), exc_info=True
         )
         sys.exit(1)
 

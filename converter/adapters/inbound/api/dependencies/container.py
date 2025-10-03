@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 from fastapi import Request
 
@@ -6,6 +6,6 @@ from converter.shared.di import Container
 
 
 def get_container_dependency(request: Request) -> Container:
-    app_state: Any = request.app.state  # type: ignore
+    app_state: Any = request.app.state
 
-    return app_state.container
+    return cast(Container, app_state.container)

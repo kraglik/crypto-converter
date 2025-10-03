@@ -41,9 +41,8 @@ class PostgresQuoteWriter(QuoteWriter):
                 index_elements=["symbol", "quote_timestamp"]
             )
 
-            async with self._session_factory() as session:
-                async with session.begin():
-                    await session.execute(stmt)
+            async with self._session_factory() as session, session.begin():
+                await session.execute(stmt)
 
             duration = time.time() - start_time
 

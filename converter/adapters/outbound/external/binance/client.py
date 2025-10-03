@@ -1,7 +1,7 @@
 import asyncio
 import time
 from enum import Enum
-from typing import Any, Optional, Union
+from typing import Any, Awaitable, Callable, Optional, ParamSpec, TypeVar, Union, cast
 
 import aiohttp
 from tenacity import (
@@ -35,23 +35,29 @@ class CircuitBreakerState(Enum):
     HALF_OPEN = "half_open"
 
 
+P = ParamSpec("P")
+T = TypeVar("T")
+
+
 class CircuitBreaker:
     def __init__(
         self,
         failure_threshold: int = 5,
         recovery_timeout: int = 60,
         expected_exception: type[Exception] = Exception,
-    ):
-        self.failure_threshold = failure_threshold
-        self.recovery_timeout = recovery_timeout
-        self.expected_exception = expected_exception
+    ) -> None:
+        self.failure_threshold: int = failure_threshold
+        self.recovery_timeout: int = recovery_timeout
+        self.expected_exception: type[Exception] = expected_exception
 
         self.failure_count = 0
         self.last_failure_time: Optional[float] = None
         self.state = CircuitBreakerState.CLOSED
-        self._lock = asyncio.Lock()
+        self._lock: asyncio.Lock = asyncio.Lock()
 
-    async def call(self, func, *args, **kwargs):
+    async def call(
+        self, func: Callable[P, Awaitable[T]], *args: P.args, **kwargs: P.kwargs
+    ) -> T:
         async with self._lock:
             if self.state == CircuitBreakerState.OPEN:
                 if self._should_attempt_reset():
@@ -60,13 +66,13 @@ class CircuitBreaker:
                 else:
                     raise QuoteProviderUnavailableError(
                         "Binance",
-                        f"Circuit breaker is open. Waiting for recovery timeout.",
+                        "Circuit breaker is open. Waiting for recovery timeout.",
                     )
 
             current_state = self.state
 
         try:
-            result = await func(*args, **kwargs)
+            result: T = await func(*args, **kwargs)
 
             if current_state == CircuitBreakerState.HALF_OPEN:
                 await self._on_success()
@@ -77,13 +83,13 @@ class CircuitBreaker:
             await self._on_failure()
             raise
 
-    async def _on_success(self):
+    async def _on_success(self) -> None:
         async with self._lock:
             self.failure_count = 0
             self.state = CircuitBreakerState.CLOSED
             logger.info("circuit_breaker_closed", failure_count_reset=True)
 
-    async def _on_failure(self):
+    async def _on_failure(self) -> None:
         async with self._lock:
             self.failure_count += 1
             self.last_failure_time = time.time()
@@ -97,10 +103,10 @@ class CircuitBreaker:
                 )
 
     def _should_attempt_reset(self) -> bool:
-        return (
-            self.last_failure_time
-            and (time.time() - self.last_failure_time) >= self.recovery_timeout
-        )
+        if self.last_failure_time is None:
+            return False
+
+        return (time.time() - self.last_failure_time) >= self.recovery_timeout
 
 
 class BinanceAPIClient:
@@ -114,7 +120,7 @@ class BinanceAPIClient:
         enable_circuit_breaker: bool = True,
         circuit_breaker_failure_threshold: int = 5,
         circuit_breaker_recovery_timeout: int = 60,
-    ):
+    ) -> None:
         self._timeout = aiohttp.ClientTimeout(total=timeout)
         self._max_connections = max_connections
         self._max_connections_per_host = max_connections_per_host
@@ -159,8 +165,10 @@ class BinanceAPIClient:
             )
 
         try:
+            assert isinstance(data, dict)
             return BinanceServerTime.from_json(data)
-        except ValueError as e:
+
+        except (ValueError, AssertionError) as e:
             raise QuoteProviderUnavailableError(
                 "Binance", f"Invalid server time response: {e}"
             ) from e
@@ -216,12 +224,13 @@ class BinanceAPIClient:
             )
 
         try:
+            assert isinstance(data, dict)
             exchange_info = BinanceExchangeInfo.from_json(data)
             logger.debug(
                 "binance_exchange_info_fetched", symbol_count=len(exchange_info.symbols)
             )
             return exchange_info
-        except ValueError as e:
+        except (ValueError, AssertionError) as e:
             raise QuoteProviderUnavailableError(
                 "Binance", f"Invalid exchange info response: {e}"
             ) from e
@@ -277,7 +286,9 @@ class BinanceAPIClient:
                 reraise=True,
             ):
                 with attempt:
-                    result = await self._make_request(endpoint, params, description)
+                    result: Union[
+                        dict[str, Any], list[dict[str, Any]]
+                    ] = await self._make_request(endpoint, params, description)
                     return result
 
             # To let linter know we're guaranteed to raise an exception by this point
@@ -287,7 +298,7 @@ class BinanceAPIClient:
             )
 
         except RetryError as e:
-            original_error = e.last_attempt.exception()
+            original_error: Optional[BaseException] = e.last_attempt.exception()
             raise QuoteProviderUnavailableError(
                 "Binance",
                 f"{description} failed after retries: {original_error}",
@@ -299,9 +310,8 @@ class BinanceAPIClient:
         params: Optional[dict[str, Any]],
         description: str,
     ) -> Union[dict[str, Any], list[dict[str, Any]]]:
-
-        session = await self._ensure_session()
-        url = f"{self.BASE_URL}{endpoint.value}"
+        session: aiohttp.ClientSession = await self._ensure_session()
+        url: str = f"{self.BASE_URL}{endpoint.value}"
 
         async with session.get(url, params=params) as response:
             logger.debug(
@@ -311,7 +321,7 @@ class BinanceAPIClient:
             )
 
             if response.status == 429:
-                retry_after = int(response.headers.get("Retry-After", 60))
+                retry_after: int = int(response.headers.get("Retry-After", 60))
                 logger.warning(
                     "binance_rate_limited",
                     endpoint=endpoint.value,
@@ -322,17 +332,17 @@ class BinanceAPIClient:
                 raise aiohttp.ClientError(f"Rate limited, retry after {retry_after}s")
 
             if response.status != 200:
-                error_text = await response.text()
+                error_text: str = await response.text()
                 raise QuoteProviderUnavailableError(
                     "Binance",
                     f"{description} failed: HTTP {response.status} - {error_text}",
                 )
 
             try:
-                data = await response.json()
+                data: Any = await response.json()
             except aiohttp.ContentTypeError as e:
                 raise QuoteProviderUnavailableError(
                     "Binance", f"{description} returned non-JSON response"
                 ) from e
 
-            return data
+            return cast(Union[dict[str, Any], list[dict[str, Any]]], data)

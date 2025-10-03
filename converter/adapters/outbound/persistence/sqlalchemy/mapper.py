@@ -12,12 +12,12 @@ class SQLAlchemyMapper:
         self._rate_factory = rate_factory
 
     def db_model_to_quote(self, db_model: QuoteModel) -> Quote:
-        base_symbol = Currency(db_model.base_currency)
-        quote_symbol = Currency(db_model.quote_currency)
+        # These fields are always present, but mypy things otherwise
+        base_symbol = Currency(db_model.base_currency)  # type: ignore [arg-type]
+        quote_symbol = Currency(db_model.quote_currency)  # type: ignore [arg-type]
+        timestamp = TimestampUTC(db_model.quote_timestamp)  # type: ignore [arg-type]
 
         pair = Pair(base_symbol, quote_symbol)
-
-        timestamp = TimestampUTC(db_model.quote_timestamp)
         rate = self._rate_factory.from_string(str(db_model.rate))
 
         return Quote(
@@ -47,5 +47,5 @@ class SQLAlchemyMapper:
             quote_timestamp=quote.timestamp.value,
             base_currency=quote.pair.base.code,
             quote_currency=quote.pair.quote.code,
-            rate=quote.rate.value,
+            rate=quote.rate.value,  # type: ignore [arg-type]
         )

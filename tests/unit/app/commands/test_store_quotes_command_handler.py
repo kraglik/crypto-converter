@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 import pytest
-
 from converter.app.commands.store_quotes import (
     StoreQuotesCommand,
     StoreQuotesCommandHandler,

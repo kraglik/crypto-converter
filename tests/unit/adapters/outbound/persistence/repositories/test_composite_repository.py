@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 import pytest
-
 from converter.adapters.outbound.persistence.repositories.composite_quote_repository import (
     CompositeQuoteRepository,
 )

@@ -1,5 +1,6 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from typing import Awaitable, Callable
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -30,7 +31,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     logger.info("api_starting_up")
 
     container = get_container(app_type="api")
-    setattr(app, "state", type("State", (), {"container": container})())
+    app.state = type("State", (), {"container": container})()
 
     try:
         redis_client = container.redis_client()
@@ -181,7 +182,10 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
 
 
 @app.middleware("http")
-async def log_requests(request: Request, call_next):
+async def log_requests(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]],
+) -> Response:
     import time
 
     from converter.shared.observability import get_metrics_registry

@@ -24,4 +24,5 @@ def test_settings(monkeypatch):
     monkeypatch.setenv("REDIS_QUOTE_TTL_SECONDS", "120")
 
     from converter.shared.config import get_settings
+
     get_settings.cache_clear()

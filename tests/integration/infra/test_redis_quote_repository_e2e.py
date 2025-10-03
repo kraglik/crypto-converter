@@ -3,7 +3,6 @@ from decimal import Decimal
 
 import pytest
 import redis.asyncio as aioredis
-
 from converter.adapters.outbound.persistence.redis.quote_repository import (
     RedisQuoteRepository,
 )
@@ -26,7 +25,9 @@ def _quote(ts: datetime) -> Quote:
 async def test_redis_writer_and_repo_roundtrip(redis_client: aioredis.Redis):
     # Given
     rate_factory = RateFactory(PrecisionService())
-    writer = RedisQuoteWriter(redis_client=redis_client, rate_factory=rate_factory, ttl_seconds=120)
+    writer = RedisQuoteWriter(
+        redis_client=redis_client, rate_factory=rate_factory, ttl_seconds=120
+    )
     repo = RedisQuoteRepository(redis_client=redis_client, rate_factory=rate_factory)
 
     now = datetime.now(timezone.utc).replace(microsecond=0)

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from converter.domain.values import Amount, Pair, QuoteAge, Rate, TimestampUTC
 
@@ -16,7 +17,7 @@ class Quote:
     rate: Rate
     timestamp: TimestampUTC
 
-    def age(self, reference_time: TimestampUTC = None) -> QuoteAge:
+    def age(self, reference_time: Optional[TimestampUTC] = None) -> QuoteAge:
         """
         Get the quote age.
 

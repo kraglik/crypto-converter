@@ -37,8 +37,6 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
-black = "^25.9.0"
-isort = "^6.1.0"
 pytest = "^8.4.2"
 ruff = "^0.13.2"
 pytest-cov = "^7.0.0"
@@ -105,3 +103,90 @@ exclude_lines = [
     "@(abc\\.)?abstractmethod",
 ]
 
+[tool.ruff]
+target-version = "py313"
+src = ["converter"]
+line-length = 88
+
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "venv",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    "B",
+    "C4",
+    "SIM",
+]
+ignore = [
+    "B905",
+    "F401",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+"converter/adapters/inbound/api/**/*.py" = ["B008"]  # otherwise ruff complains about normal fastapi stuff
+"converter/shared/di/container.py" = ["E501"]  # DI container has some loooong lines
+"converter/shared/config/settings.py" = ["E501"]  # Settings as well
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
+
+disallow_untyped_defs = true
+disallow_any_unimported = true
+no_implicit_optional = true
+check_untyped_defs = true
+
+mypy_path = "converter"
+namespace_packages = true
+explicit_package_bases = true
+
+plugins = [
+    "pydantic.mypy",
+    "sqlalchemy.ext.mypy.plugin"
+]
+
+[[tool.mypy.overrides]]
+module = [
+    "apscheduler.*",
+    "fakeredis.*",
+    "testcontainers.*",
+    "structlog.*",
+    "prometheus_client.*",
+    "tenacity.*",
+    "opentelemetry.*",
+    "uvicorn",
+    "freezegun",
+]
+ignore_missing_imports = true

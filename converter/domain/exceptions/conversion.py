@@ -11,7 +11,7 @@ class ConversionError(DomainException):
 class QuoteNotFoundError(ConversionError):
     """Raised when no quote is available for a currency pair."""
 
-    def __init__(self, pair: Pair, timestamp: "TimestampUTC" = None):
+    def __init__(self, pair: Pair, timestamp: Optional["TimestampUTC"] = None):
         message = f"No quote found for pair {pair}"
 
         if timestamp:
@@ -30,11 +30,13 @@ class QuoteTooOldError(ConversionError):
         max_age_seconds: int,
         reference_time: Optional[TimestampUTC] = None,
     ):
-
-        message = f"Quote for {pair} is too old: " f"{age.seconds:.1f}s old"
+        message = (
+            f"Quote for {pair} is too old: {age.seconds:.1f}s old, "
+            f"max_age_seconds: {max_age_seconds} seconds"
+        )
 
         if reference_time is not None:
-            message += f" at {reference_time}"
+            message += f", at {reference_time}"
 
         super().__init__(message)
 

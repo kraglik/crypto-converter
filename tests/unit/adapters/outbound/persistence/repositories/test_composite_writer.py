@@ -2,9 +2,8 @@ import types
 from datetime import datetime, timezone
 from decimal import Decimal
 
-import pytest
-
 import converter.adapters.outbound.persistence.repositories.composite_quote_writer as writer_module
+import pytest
 from converter.adapters.outbound.persistence.repositories.composite_quote_writer import (
     CompositeQuoteWriter,
 )

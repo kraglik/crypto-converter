@@ -1,9 +1,9 @@
-import asyncio
 from datetime import date, datetime, timedelta, timezone
 from typing import AsyncIterator
 
 import pytest
 import redis.asyncio as aioredis
+from converter.shared.config import get_settings
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -13,8 +13,6 @@ from sqlalchemy.ext.asyncio import (
 )
 from testcontainers.postgres import PostgresContainer
 from testcontainers.redis import RedisContainer
-
-from converter.shared.config import get_settings
 
 
 @pytest.fixture(scope="session")
@@ -45,8 +43,6 @@ def redis_container() -> RedisContainer:
         yield container
     finally:
         container.stop()
-
-
 
 
 async def _init_partitioned_schema(engine: AsyncEngine) -> None:
@@ -150,7 +146,9 @@ def session_factory(postgres_engine: AsyncEngine) -> async_sessionmaker[AsyncSes
 
 
 @pytest.fixture(scope="function")
-async def redis_client(redis_container: RedisContainer) -> AsyncIterator[aioredis.Redis]:
+async def redis_client(
+    redis_container: RedisContainer,
+) -> AsyncIterator[aioredis.Redis]:
     host = redis_container.get_container_host_ip()
     port = int(redis_container.get_exposed_port(6379))
     client = aioredis.from_url(f"redis://{host}:{port}/0", decode_responses=False)

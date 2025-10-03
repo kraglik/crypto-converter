@@ -2,7 +2,6 @@ import asyncio
 from decimal import Decimal
 
 import pytest
-
 from converter.adapters.outbound.external.binance.models import (
     BinanceExchangeInfo,
     BinanceServerTime,

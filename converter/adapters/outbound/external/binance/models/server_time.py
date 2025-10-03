@@ -22,7 +22,7 @@ class BinanceServerTime:
         return datetime.fromtimestamp(self.server_time_ms / 1000, tz=timezone.utc)
 
     @classmethod
-    def from_json(cls, data: dict) -> "BinanceServerTime":
+    def from_json(cls, data: dict[str, int]) -> "BinanceServerTime":
         try:
             return cls(server_time_ms=int(data["serverTime"]))
 

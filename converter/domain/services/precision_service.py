@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
+from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -16,7 +17,7 @@ class PrecisionService:
     Domain service for handling numeric precision.
     """
 
-    def __init__(self, policy: PrecisionPolicy = None):
+    def __init__(self, policy: Optional[PrecisionPolicy] = None) -> None:
         self._policy = policy or PrecisionPolicy()
 
     def normalize_amount(self, value: Decimal) -> Decimal:

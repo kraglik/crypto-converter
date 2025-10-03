@@ -8,7 +8,7 @@ class Pair:
     base: Currency
     quote: Currency
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.base == self.quote:
             raise ValueError(
                 f"Base and quote currencies must be different: {self.base}"

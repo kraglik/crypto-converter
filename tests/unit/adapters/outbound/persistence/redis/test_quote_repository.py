@@ -23,7 +23,9 @@ pytestmark = pytest.mark.skipif(FakeRedis is None, reason="fakeredis not availab
 async def test_get_latest_hit_and_miss():
     # When
     redis = FakeRedis()
-    repo = RedisQuoteRepository(redis_client=redis, rate_factory=RateFactory(PrecisionService()))
+    repo = RedisQuoteRepository(
+        redis_client=redis, rate_factory=RateFactory(PrecisionService())
+    )
 
     pair = Pair(Currency("BTC"), Currency("USDT"))
     key = f"quote:latest:{pair}"
@@ -52,7 +54,9 @@ async def test_get_latest_hit_and_miss():
 async def test_get_latest_before_not_supported():
     # Given
     redis = FakeRedis()
-    repo = RedisQuoteRepository(redis_client=redis, rate_factory=RateFactory(PrecisionService()))
+    repo = RedisQuoteRepository(
+        redis_client=redis, rate_factory=RateFactory(PrecisionService())
+    )
     pair = Pair(Currency("BTC"), Currency("USDT"))
     ts = TimestampUTC(datetime(2025, 10, 2, 0, 0, 0, tzinfo=timezone.utc))
 

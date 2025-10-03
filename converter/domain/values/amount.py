@@ -6,7 +6,7 @@ from decimal import Decimal
 class Amount:
     value: Decimal
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.value < 0:
             raise ValueError(f"Amount cannot be negative: {self.value}")
 

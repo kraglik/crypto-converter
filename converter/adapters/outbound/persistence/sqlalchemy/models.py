@@ -20,5 +20,5 @@ class QuoteModel(Base):
 
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Quote {self.symbol} @ {self.quote_timestamp}: {self.rate}>"

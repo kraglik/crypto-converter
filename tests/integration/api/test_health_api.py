@@ -1,10 +1,9 @@
 import importlib
 
-from fastapi.testclient import TestClient
-
 import converter.adapters.inbound.api.app as app_module
 from converter.adapters.inbound.api.dependencies.db import get_db_session
 from converter.adapters.inbound.api.dependencies.services import get_redis_client
+from fastapi.testclient import TestClient
 
 
 class MockDBSession:
@@ -14,8 +13,10 @@ class MockDBSession:
     async def execute(self, stmt):
         if self.fail:
             raise Exception("db error")
+
         class R:
             pass
+
         return R()
 
     async def __aenter__(self):
@@ -45,7 +46,10 @@ class MockContainer:
 
 def _build_app(monkeypatch, db_fail: bool = False, redis_fail: bool = False):
     from converter.shared import di as di_module
-    monkeypatch.setattr(di_module, "get_container", lambda *args, **kwargs: MockContainer())
+
+    monkeypatch.setattr(
+        di_module, "get_container", lambda *args, **kwargs: MockContainer()
+    )
 
     app = importlib.reload(app_module).app
 

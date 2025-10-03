@@ -1,7 +1,6 @@
 from decimal import Decimal
 
 import pytest
-
 from converter.domain.values import Amount, Rate
 
 

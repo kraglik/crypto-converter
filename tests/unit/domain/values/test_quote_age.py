@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 
 import pytest
-
 from converter.domain.values import QuoteAge, TimestampUTC
 
 

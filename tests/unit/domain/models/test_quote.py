@@ -9,7 +9,7 @@ def _make_quote():
     pair = Pair(Currency("BTC"), Currency("USDT"))
     rate = Rate(Decimal("25000"))
     ts = TimestampUTC(datetime(2025, 10, 2, 12, 0, 0, tzinfo=timezone.utc))
-    
+
     return Quote(pair=pair, rate=rate, timestamp=ts)
 
 

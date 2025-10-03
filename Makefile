@@ -1,8 +1,12 @@
-.PHONY: fmt test test-cov
+.PHONY: fmt test test-cov lint typecheck check
 
 fmt:
-	poetry run isort converter tests
-	poetry run black converter
+	poetry run ruff check . --select I --fix
+	poetry run ruff check . --fix
+	poetry run ruff format .
+
+lint:
+	poetry run ruff check converter
 
 test:
 	PYTHONPATH=. poetry run pytest
@@ -10,3 +14,7 @@ test:
 test-cov:
 	PYTHONPATH=. poetry run pytest --cov=converter --cov-report=term-missing
 
+typecheck:
+	poetry run mypy --package converter
+
+check: fmt lint typecheck test

@@ -9,7 +9,7 @@ class RedisTicker:
     rate: Decimal
     timestamp: datetime
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.symbol:
             raise ValueError("Symbol cannot be empty")
         if not self.symbol.isupper():
